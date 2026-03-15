@@ -15,12 +15,12 @@ def setup_browser():
     })
 
     driver = webdriver.Remote(
-        command_executor="http://localhost:4444/wd/hub",
+        command_executor="http://selenoid:4444/wd/hub",
         options=options
     )
 
     browser.config.driver = driver
     browser.config.timeout = 10
 
-    yield browser
+    yield
     driver.quit()
