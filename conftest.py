@@ -1,11 +1,26 @@
 import pytest
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
 from selene import browser
 
 
-@pytest.fixture(autouse=True)
-def browser_settings():
-    browser.config.window_width = 1920
-    browser.config.window_height = 1080
-    browser.config.headless = False  # True для headless
-    yield
-    browser.quit()
+@pytest.fixture(scope='function', autouse=True)
+def setup_browser():
+    options = Options()
+    options.set_capability("browserName", "chrome")
+    options.set_capability("browserVersion", "127.0")
+    options.set_capability("selenoid:options", {
+        "enableVNC": True,
+        "enableVideo": True
+    })
+
+    driver = webdriver.Remote(
+        command_executor="http://localhost:4444/wd/hub",
+        options=options
+    )
+
+    browser.config.driver = driver
+    browser.config.timeout = 10
+
+    yield browser
+    driver.quit()
